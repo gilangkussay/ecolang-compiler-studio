@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EcoLang Compiler Studio</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="bg"></div>
+    <header class="topbar">
+      <div class="logo">♻ EcoLang Compiler Studio</div>
+      <nav><a>Editor</a><a>Lexical</a><a>Syntax</a><a>Parse Tree</a><a>Code Generator</a></nav>
+      <div class="status">● Ready</div>
+    </header>
+
+    <div class="layout">
+      <aside class="sidebar">
+        <h3>Dashboard</h3>
+        <ul>
+          <li>Source Code</li>
+          <li>Tokens</li>
+          <li>Syntax</li>
+          <li>Parse Tree</li>
+          <li>Generated JS</li>
+        </ul>
+      </aside>
+
+      <main class="grid">
+        <div class="stats">
+          <div class="stat"><span id="tokenCount">0</span><small>Total Tokens</small></div>
+          <div class="stat"><span id="varCount">0</span><small>Variables</small></div>
+          <div class="stat"><span id="errorCount">0</span><small>Errors</small></div>
+          <div class="stat"><span id="lineCount">0</span><small>Generated Lines</small></div>
+        </div>
+
+        <section class="card">
+          <h2>Source Editor</h2>
+          <textarea id="editor"></textarea>
+          <div class="actions">
+            <button onclick="compileEco()">Compile</button>
+            <button onclick="resetEditor()">Reset</button>
+            <button onclick="loadSample()">Load Sample</button>
+            <button onclick="exportJS()">Export JS</button>
+            <button onclick="downloadReport()">Download Report</button>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Token Result</h2>
+          <div id="tokens"></div>
+        </section>
+        <section class="card">
+          <h2>Syntax Result</h2>
+          <div id="syntax"></div>
+        </section>
+        <section class="card">
+          <h2>Parse Tree</h2>
+          <pre id="tree"></pre>
+        </section>
+        <section class="card">
+          <h2>Generated JS</h2>
+          <pre id="generated"></pre>
+        </section>
+      </main>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
