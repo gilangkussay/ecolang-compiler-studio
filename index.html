@@ -10,58 +10,245 @@
     <div class="bg"></div>
     <header class="topbar">
       <div class="logo">♻ EcoLang Compiler Studio</div>
-      <nav><a>Editor</a><a>Lexical</a><a>Syntax</a><a>Parse Tree</a><a>Code Generator</a></nav>
-      <div class="status">● Ready</div>
+      <nav>
+        <a href="#editor-section">Editor</a>
+        <a href="#pipeline-section">Pipeline</a>
+        <a href="#tokens-section">Tokens</a>
+        <a href="#symbol-section">Symbol Table</a>
+        <a href="#ast-section">AST</a>
+        <a href="#tac-section">IR & Optimization</a>
+        <a href="#codegen-section">Generated JS</a>
+      </nav>
+      <div class="status" id="system-status">● Ready</div>
     </header>
 
     <div class="layout">
       <aside class="sidebar">
-        <h3>Dashboard</h3>
+        <h3>Navigation</h3>
         <ul>
-          <li>Source Code</li>
-          <li>Tokens</li>
-          <li>Syntax</li>
-          <li>Parse Tree</li>
-          <li>Generated JS</li>
+          <li><a href="#editor-section">Source Code</a></li>
+          <li><a href="#pipeline-section">Pipeline Status</a></li>
+          <li><a href="#stats-section">Dashboard Stats</a></li>
+          <li><a href="#errors-section" id="sidebar-errors-link" style="display:none; color:#ef4444; font-weight:bold;">Errors Detected</a></li>
+          <li><a href="#tokens-section">Token Result</a></li>
+          <li><a href="#symbol-section">Symbol Table</a></li>
+          <li><a href="#ast-section">Abstract Syntax Tree</a></li>
+          <li><a href="#tac-section">Three Address Code</a></li>
+          <li><a href="#opt-section">Code Optimization</a></li>
+          <li><a href="#codegen-section">Generated JS</a></li>
         </ul>
       </aside>
 
       <main class="grid">
-        <div class="stats">
-          <div class="stat"><span id="tokenCount">0</span><small>Total Tokens</small></div>
-          <div class="stat"><span id="varCount">0</span><small>Variables</small></div>
-          <div class="stat"><span id="errorCount">0</span><small>Errors</small></div>
-          <div class="stat"><span id="lineCount">0</span><small>Generated Lines</small></div>
-        </div>
-
-        <section class="card">
-          <h2>Source Editor</h2>
-          <textarea id="editor"></textarea>
-          <div class="actions">
-            <button onclick="compileEco()">Compile</button>
-            <button onclick="resetEditor()">Reset</button>
-            <button onclick="loadSample()">Load Sample</button>
-            <button onclick="exportJS()">Export JS</button>
-            <button onclick="downloadReport()">Download Report</button>
+        <!-- Dashboard Statistics -->
+        <section id="stats-section" class="card-stats">
+          <h3>Dashboard Statistics</h3>
+          <div class="stats">
+            <div class="stat"><span id="tokenCount">0</span><small>Total Tokens</small></div>
+            <div class="stat"><span id="identifierCount">0</span><small>Identifiers</small></div>
+            <div class="stat"><span id="keywordCount">0</span><small>Keywords</small></div>
+            <div class="stat"><span id="operatorCount">0</span><small>Operators</small></div>
+            <div class="stat"><span id="numberCount">0</span><small>Numbers</small></div>
+            <div class="stat"><span id="varCount">0</span><small>Variables</small></div>
+            <div class="stat"><span id="errorCount">0</span><small>Errors</small></div>
+            <div class="stat"><span id="warningCount">0</span><small>Warnings</small></div>
+            <div class="stat"><span id="astCount">0</span><small>AST Nodes</small></div>
+            <div class="stat"><span id="lineCount">0</span><small>Generated Lines</small></div>
+            <div class="stat"><span id="savingsCount">0%</span><small>Optimization Savings</small></div>
           </div>
         </section>
 
-        <section class="card">
-          <h2>Token Result</h2>
-          <div id="tokens"></div>
+        <!-- Pipeline Status Visualization -->
+        <section id="pipeline-section" class="card">
+          <h2>Compiler Pipeline Status</h2>
+          <div class="pipeline">
+            <div class="stage" id="stage-lexical">
+              <div class="indicator waiting"></div>
+              <span class="stage-name">Lexical Analysis</span>
+              <span class="stage-status">Waiting</span>
+            </div>
+            <div class="stage" id="stage-syntax">
+              <div class="indicator waiting"></div>
+              <span class="stage-name">Syntax Analysis</span>
+              <span class="stage-status">Waiting</span>
+            </div>
+            <div class="stage" id="stage-semantic">
+              <div class="indicator waiting"></div>
+              <span class="stage-name">Semantic Analysis</span>
+              <span class="stage-status">Waiting</span>
+            </div>
+            <div class="stage" id="stage-symbol">
+              <div class="indicator waiting"></div>
+              <span class="stage-name">Symbol Table</span>
+              <span class="stage-status">Waiting</span>
+            </div>
+            <div class="stage" id="stage-ast">
+              <div class="indicator waiting"></div>
+              <span class="stage-name">AST Generator</span>
+              <span class="stage-status">Waiting</span>
+            </div>
+            <div class="stage" id="stage-ir">
+              <div class="indicator waiting"></div>
+              <span class="stage-name">IR Generator (TAC)</span>
+              <span class="stage-status">Waiting</span>
+            </div>
+            <div class="stage" id="stage-optimization">
+              <div class="indicator waiting"></div>
+              <span class="stage-name">Code Optimizer</span>
+              <span class="stage-status">Waiting</span>
+            </div>
+            <div class="stage" id="stage-codegen">
+              <div class="indicator waiting"></div>
+              <span class="stage-name">Code Generator</span>
+              <span class="stage-status">Waiting</span>
+            </div>
+          </div>
         </section>
-        <section class="card">
-          <h2>Syntax Result</h2>
-          <div id="syntax"></div>
+
+        <!-- Editor & Testing Grid -->
+        <div class="editor-grid" id="editor-section">
+          <section class="card editor-card">
+            <h2>Source Editor</h2>
+            <textarea id="editor" placeholder="Write EcoLang code here..."></textarea>
+            <div class="actions">
+              <button class="btn btn-primary" onclick="compileEco()">⚡ Compile</button>
+              <button class="btn btn-secondary" onclick="resetEditor()">🔄 Reset</button>
+              <button class="btn btn-secondary" onclick="loadSample()">📄 Load Sample</button>
+              <button class="btn btn-accent" onclick="exportJS()">💾 Export JS</button>
+              <div class="dropdown-export">
+                <button class="btn btn-accent">📥 Export Report</button>
+                <div class="dropdown-content">
+                  <a href="#" onclick="downloadReport('txt')">TXT Report</a>
+                  <a href="#" onclick="downloadReport('html')">HTML Report</a>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="card testing-card">
+            <h2>Compiler Testing (Test Cases)</h2>
+            <p class="section-desc">Select a preset program to test the compiler pipelines and error validation.</p>
+            <div class="test-cases">
+              <button class="btn-test" onclick="loadTestCase('valid')">
+                <strong>✅ Valid Program</strong>
+                <span>Standard assignment, arithmetic and display</span>
+              </button>
+              <button class="btn-test" onclick="loadTestCase('undeclared')">
+                <strong>⚠️ Undeclared Variable</strong>
+                <span>Calculates using a variable that hasn't been defined</span>
+              </button>
+              <button class="btn-test" onclick="loadTestCase('duplicate')">
+                <strong>⚠️ Duplicate Variable</strong>
+                <span>Redeclares an existing variable using SAMPAH</span>
+              </button>
+              <button class="btn-test" onclick="loadTestCase('syntax')">
+                <strong>❌ Invalid Syntax</strong>
+                <span>Breaks grammar rules (e.g. missing operators/variable names)</span>
+              </button>
+              <button class="btn-test" onclick="loadTestCase('arithmetic')">
+                <strong>🧮 Complex Arithmetic</strong>
+                <span>Demonstrates operator precedence (e.g. A + B * C)</span>
+              </button>
+              <button class="btn-test" onclick="loadTestCase('optimization')">
+                <strong>⚡ Optimization Showcase</strong>
+                <span>Constant propagation, folding, and dead code elimination</span>
+              </button>
+              <button class="btn-test" onclick="loadTestCase('simplification')">
+                <strong>🧮 Algebraic Simplification</strong>
+                <span>Simplifies expressions like X + 0, Y * 1, Z * 0</span>
+              </button>
+              <button class="btn-test" onclick="loadTestCase('largeData')">
+                <strong>♻️ Daur Ulang Besar</strong>
+                <span>Ecology data model using multiple variables (realistic program)</span>
+              </button>
+              <button class="btn-test" onclick="loadTestCase('parentheses')">
+                <strong>括号 Bracket Priority</strong>
+                <span>Demonstrates nested parentheses priority parsing</span>
+              </button>
+            </div>
+          </section>
+        </div>
+
+        <!-- Error Handler Console -->
+        <section id="errors-section" class="card error-card" style="display: none;">
+          <h2>Diagnostic Log & Compilation Errors</h2>
+          <div class="error-container" id="errorList"></div>
         </section>
-        <section class="card">
-          <h2>Parse Tree</h2>
-          <pre id="tree"></pre>
-        </section>
-        <section class="card">
-          <h2>Generated JS</h2>
-          <pre id="generated"></pre>
-        </section>
+
+        <!-- Compiler Pipeline Results -->
+        <div class="results-grid">
+          <!-- Token Result -->
+          <section id="tokens-section" class="card">
+            <h2>Lexical Analysis: Tokens</h2>
+            <div class="scroll-container">
+              <div id="tokens"></div>
+            </div>
+          </section>
+
+          <!-- Symbol Table -->
+          <section id="symbol-section" class="card">
+            <h2>Symbol Table</h2>
+            <div class="scroll-container">
+              <div id="symbolTableContainer">
+                <table id="symbolTable">
+                  <thead>
+                    <tr>
+                      <th>Identifier</th>
+                      <th>Type</th>
+                      <th>Value</th>
+                      <th>Line Declared</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td colspan="4" class="text-center">No variables declared yet.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- AST Viewer -->
+          <section id="ast-section" class="card">
+            <h2>Abstract Syntax Tree (AST)</h2>
+            <div class="scroll-container">
+              <pre id="tree" class="code-font"></pre>
+            </div>
+          </section>
+
+          <!-- Intermediate Code (TAC) -->
+          <section id="tac-section" class="card">
+            <h2>Intermediate Code (Three Address Code)</h2>
+            <div class="scroll-container">
+              <pre id="tacCode" class="code-font"></pre>
+            </div>
+          </section>
+
+          <!-- Optimization Result -->
+          <section id="opt-section" class="card">
+            <h2>Code Optimization Result</h2>
+            <div class="opt-comparison">
+              <div>
+                <h4>Original TAC</h4>
+                <pre id="optOriginal" class="code-font"></pre>
+              </div>
+              <div class="arrow-indicator">➔</div>
+              <div>
+                <h4>Optimized TAC</h4>
+                <pre id="optOptimized" class="code-font"></pre>
+              </div>
+            </div>
+          </section>
+
+          <!-- Target JS Output -->
+          <section id="codegen-section" class="card">
+            <h2>Target Code Generation: JS</h2>
+            <div class="scroll-container">
+              <pre id="generated" class="code-font"></pre>
+            </div>
+          </section>
+        </div>
       </main>
     </div>
     <script src="script.js"></script>
